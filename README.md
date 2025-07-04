@@ -40,9 +40,11 @@ python main.py
 
 ### 4. Start on boot (Windows)
 
-To start the application on boot, you can add a shortcut to the `start_whisprly.ps1` script in the startup folder:
+To start the application on boot, you can add a shortcut to the `start_whisprly.vbs` script in the startup folder:
 
 1.  Press `Win + R` to open the Run dialog.
 2.  Type `shell:startup` and press Enter. This will open the startup folder.
-3.  Create a shortcut to the `start_whisprly.ps1` file by right-clicking on it and selecting `Create shortcut`.
+3.  Create a shortcut to the `start_whisprly.vbs` file by right-clicking on it and selecting `Create shortcut`.
 4.  Move the newly created shortcut into the startup folder.
+
+[!] Note: The exit is not possible in this mode (or you may need to cut the process manually)
