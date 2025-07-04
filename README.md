@@ -27,8 +27,10 @@ uv pip install -r requirements.txt
 
 ### 3. Usage
 
-- **Start Recording**: Press and hold `F1`
-- **Exit**: `CTRL` + `ALT` + `X`
+- **Start Recording**: Press and hold the `F1` key.
+- **Stop Recording**: Release the `F1` key.
+- The transcription will appear at the current position of your text cursor.
+- **Exit**: Press `CTRL` + `ALT` + `X` to exit the application.
 
 > ✨ These shortcuts can be customized in your `.env` file.
 
