@@ -84,9 +84,12 @@ class VoiceToTextApp(QObject):
 
     def _exit_app(self) -> None:
         print("\nExit hotkey pressed. Shutting down...")
-        self.show_notification_signal.emit("Shutting down...")
         keyboard.unhook_all()
-        QTimer.singleShot(1500, self.exit_signal.emit)
+
+        if self.notification:
+            self.notification.close()
+        self.overlay.close()
+        QTimer.singleShot(100, self.app.quit)
 
     def _show_notification(self, text: str) -> None:
         self.notification = Notification(text)
