@@ -48,11 +48,14 @@ class VoiceToTextApp(QObject):
             self.show_notification_signal.emit("Listening...")
             print("Recording started...")
 
-    def stop_recording_and_transcribe(self) -> None:
+    def stop_recording_and_transcribe(
+        self, _: Optional[keyboard.KeyboardEvent] = None
+    ) -> None:
         if self.is_recording:
             self.is_recording = False
             self.recorder.stop()
             print("Recording stopped.")
+            self.recorder.save()
 
             if not os.path.exists(self.recorder.TEMP_FILENAME):
                 print("Recording was too short. No file saved.")
@@ -93,7 +96,6 @@ class VoiceToTextApp(QObject):
     def _hide_notification(self, delay_ms: int) -> None:
         if self.notification:
             if delay_ms > 0:
-                # Use a QTimer to hide after a delay
                 pass
             else:
                 self.notification.hide_animated()
