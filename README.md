@@ -42,5 +42,5 @@ python main.py
 
 To start the application on boot, you can add a shortcut to the startup folder :
 
-1.  Create a shortcut to the application by right-clicking on the application icon and selecting `Create shortcut`.
+1.  Create a shortcut to the application by right-clicking on the `main.py` file and selecting `Create shortcut`.
 2.  Move the shortcut to the startup folder, usually found at `C:\Users\<YourUsername>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`.
