@@ -6,7 +6,7 @@ import keyboard
 import pyautogui
 from groq import Groq
 from groq.types.audio import Transcription
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 from PyQt6.QtWidgets import QApplication
 
 from .audio import AudioRecorder
@@ -59,7 +59,8 @@ class VoiceToTextApp(QObject):
 
             if not os.path.exists(self.recorder.TEMP_FILENAME):
                 print("Recording was too short. No file saved.")
-                self.hide_notification_signal.emit(0)
+                self.update_notification_signal.emit("Recording too short")
+                self.hide_notification_signal.emit(1000)
                 return
 
             self.update_notification_signal.emit("Transcribing...")
@@ -83,7 +84,9 @@ class VoiceToTextApp(QObject):
 
     def _exit_app(self) -> None:
         print("\nExit hotkey pressed. Shutting down...")
-        self.exit_signal.emit()
+        self.show_notification_signal.emit("Shutting down...")
+        keyboard.unhook_all()
+        QTimer.singleShot(1500, self.exit_signal.emit)
 
     def _show_notification(self, text: str) -> None:
         self.notification = Notification(text)
@@ -96,7 +99,7 @@ class VoiceToTextApp(QObject):
     def _hide_notification(self, delay_ms: int) -> None:
         if self.notification:
             if delay_ms > 0:
-                pass
+                QTimer.singleShot(delay_ms, self.notification.hide_animated)
             else:
                 self.notification.hide_animated()
 
