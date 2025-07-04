@@ -1,6 +1,6 @@
 # Whisprly
 
-Whisprly is a lightweight, real-time voice-to-text transcription tool powered by Groq.
+Whisprly is a lightweight, real-time voice-to-text transcription tool powered by Whisper v3 Turbo through Groq.
 
 ## 🚀 Quick Start
 
