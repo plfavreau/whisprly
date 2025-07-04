@@ -1,4 +1,4 @@
-# Whisprly 🤫
+# Whisprly
 
 Whisprly is a lightweight, real-time voice-to-text transcription tool powered by Groq.
 
