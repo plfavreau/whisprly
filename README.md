@@ -40,7 +40,9 @@ python main.py
 
 ### 4. Start on boot (Windows)
 
-To start the application on boot, you can add a shortcut to the startup folder :
+To start the application on boot, you can add a shortcut to the `start_whisprly.ps1` script in the startup folder:
 
-1.  Create a shortcut to the application by right-clicking on the `main.py` file and selecting `Create shortcut`.
-2.  Move the shortcut to the startup folder, usually found at `C:\Users\<YourUsername>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`.
+1.  Press `Win + R` to open the Run dialog.
+2.  Type `shell:startup` and press Enter. This will open the startup folder.
+3.  Create a shortcut to the `start_whisprly.ps1` file by right-clicking on it and selecting `Create shortcut`.
+4.  Move the newly created shortcut into the startup folder.
