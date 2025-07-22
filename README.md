@@ -20,11 +20,13 @@ uv pip install -r requirements.txt
 
 ### 2. Configuration
 
+i
+
 1.  Copy the `.env.example` file to `.env`.
 2.  Create a Groq API key from [console.groq.com/keys](https://console.groq.com/keys).
 3.  Set your `GROQ_API_KEY` in the `.env` file.
 
-### 3. Usage
+### 3. Usagei
 
 ```bash
 # Run the application through the virtual environment

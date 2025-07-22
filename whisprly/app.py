@@ -70,9 +70,9 @@ class VoiceToTextApp(QObject):
                     transcription: Transcription = client.audio.transcriptions.create(
                         file=(self.recorder.TEMP_FILENAME, file.read()),
                         model="whisper-large-v3-turbo",
-                        response_format="verbose_json",
+                        response_format="text",
                     )
-                pyautogui.write(transcription.text)
+                pyautogui.write(transcription)  # type: ignore
                 self.update_notification_signal.emit("Done")
             except Exception as e:
                 print(f"An error occurred: {e}")
