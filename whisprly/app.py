@@ -3,9 +3,7 @@ import sys
 from typing import Optional
 
 import keyboard
-import pyautogui
 from groq import Groq
-from groq.types.audio import Transcription
 from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 from PyQt6.QtWidgets import QApplication
 
@@ -67,12 +65,14 @@ class VoiceToTextApp(QObject):
 
             try:
                 with open(self.recorder.TEMP_FILENAME, "rb") as file:
-                    transcription: Transcription = client.audio.transcriptions.create(
+                    transcription: str = client.audio.transcriptions.create(
                         file=(self.recorder.TEMP_FILENAME, file.read()),
                         model="whisper-large-v3-turbo",
                         response_format="text",
-                    )
-                pyautogui.write(transcription)  # type: ignore
+                    )  # type: ignore
+                transcription = transcription.strip()
+                print("Transcription: ", transcription)
+                keyboard.write(transcription)
                 self.update_notification_signal.emit("Done")
             except Exception as e:
                 print(f"An error occurred: {e}")
