@@ -23,6 +23,7 @@ class VoiceToTextApp(QObject):
     show_notification_signal = pyqtSignal(str)
     update_notification_signal = pyqtSignal(str)
     hide_notification_signal = pyqtSignal(int)
+    shutdown_signal = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -32,6 +33,7 @@ class VoiceToTextApp(QObject):
         self.show_notification_signal.connect(self._show_notification)
         self.update_notification_signal.connect(self._update_notification)
         self.hide_notification_signal.connect(self._hide_notification)
+        self.shutdown_signal.connect(self._perform_shutdown)
         self.recorder: AudioRecorder = AudioRecorder(
             TEMP_FILENAME, SAMPLE_RATE, CHANNELS
         )
@@ -86,14 +88,20 @@ class VoiceToTextApp(QObject):
                     os.remove(self.recorder.TEMP_FILENAME)
                 self.is_processing = False
 
-    def _exit_app(self) -> None:
-        print("\nExit hotkey pressed. Shutting down...")
+    def _initiate_shutdown(self) -> None:
+        print("\nShutdown initiated...")
+        # This method is safe to call from any thread.
         keyboard.unhook_all()
+        self.shutdown_signal.emit()
 
+    def _perform_shutdown(self) -> None:
+        print("Performing shutdown on main thread...")
+        # This method will be executed on the main GUI thread.
         if self.notification:
             self.notification.close()
         self.overlay.close()
-        QTimer.singleShot(100, self.app.quit)
+        self.app.quit()
+        os._exit(0)
 
     def _show_notification(self, text: str) -> None:
         self.notification = Notification(text)
@@ -119,5 +127,7 @@ class VoiceToTextApp(QObject):
         keyboard.on_release_key(
             settings.START_RECORDING_SHORTCUT, self.stop_recording_and_transcribe
         )
-        keyboard.add_hotkey(settings.EXIT_SHORTCUT, self._exit_app, suppress=True)
+        keyboard.add_hotkey(
+            settings.EXIT_SHORTCUT, self._initiate_shutdown, suppress=True
+        )
         self.app.exec()
