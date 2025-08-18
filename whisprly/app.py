@@ -37,10 +37,12 @@ class VoiceToTextApp(QObject):
         )
         self.notification: Optional[Notification] = None
         self.is_recording: bool = False
+        self.is_processing: bool = False
 
-    def start_recording(self) -> None:
-        if not self.is_recording:
+    def start_recording(self, _: Optional[keyboard.KeyboardEvent] = None) -> None:
+        if not self.is_recording and not self.is_processing:
             self.is_recording = True
+            self.is_processing = True
             self.recorder.start()
             self.overlay.show_overlay()
             self.show_notification_signal.emit("Listening...")
@@ -59,6 +61,7 @@ class VoiceToTextApp(QObject):
                 print("Recording was too short. No file saved.")
                 self.update_notification_signal.emit("Recording too short")
                 self.hide_notification_signal.emit(1000)
+                self.is_processing = False
                 return
 
             self.update_notification_signal.emit("Transcribing...")
@@ -81,6 +84,7 @@ class VoiceToTextApp(QObject):
                 self.hide_notification_signal.emit(1000)
                 if os.path.exists(self.recorder.TEMP_FILENAME):
                     os.remove(self.recorder.TEMP_FILENAME)
+                self.is_processing = False
 
     def _exit_app(self) -> None:
         print("\nExit hotkey pressed. Shutting down...")
@@ -109,7 +113,7 @@ class VoiceToTextApp(QObject):
     def run(self) -> None:
         print(f"Press and hold '{settings.START_RECORDING_SHORTCUT}' to record.")
         print(f"Press '{settings.EXIT_SHORTCUT}' to exit.")
-        keyboard.add_hotkey(
+        keyboard.on_press_key(
             settings.START_RECORDING_SHORTCUT, self.start_recording, suppress=True
         )
         keyboard.on_release_key(
