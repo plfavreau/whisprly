@@ -8,7 +8,7 @@ from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 from PyQt6.QtWidgets import QApplication
 
 from .audio import AudioRecorder
-from .config import settings
+from .config import settings, START_RECORDING_SHORTCUT, EXIT_SHORTCUT
 from .ui import Notification, OverlayWidget
 
 TEMP_FILENAME: str = "audio.wav"
@@ -119,15 +119,15 @@ class VoiceToTextApp(QObject):
                 self.notification.hide_animated()
 
     def run(self) -> None:
-        print(f"Press and hold '{settings.START_RECORDING_SHORTCUT}' to record.")
-        print(f"Press '{settings.EXIT_SHORTCUT}' to exit.")
+        print(f"Press and hold '{START_RECORDING_SHORTCUT}' to record.")
+        print(f"Press '{EXIT_SHORTCUT}' to exit.")
         keyboard.on_press_key(
-            settings.START_RECORDING_SHORTCUT, self.start_recording, suppress=True
+            START_RECORDING_SHORTCUT, self.start_recording, suppress=True
         )
         keyboard.on_release_key(
-            settings.START_RECORDING_SHORTCUT, self.stop_recording_and_transcribe
+            START_RECORDING_SHORTCUT, self.stop_recording_and_transcribe
         )
         keyboard.add_hotkey(
-            settings.EXIT_SHORTCUT, self._initiate_shutdown, suppress=True
+            EXIT_SHORTCUT, self._initiate_shutdown, suppress=True
         )
         self.app.exec()
