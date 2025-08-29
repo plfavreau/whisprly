@@ -14,9 +14,12 @@ uv venv
 
 .venv\Scripts\activate
 
-# Install dependencies
-uv pip install -r requirements.txt
+# Sync dependencies
 ```
+
+uv sync
+
+````
 
 ### 2. Configuration
 
@@ -31,7 +34,7 @@ i
 ```bash
 # Run the application through the virtual environment
 python main.py
-```
+````
 
 - **Start Recording**: Press and hold the `F1` key.
 - **Stop Recording**: Release the `F1` key.
