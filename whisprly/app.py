@@ -282,31 +282,29 @@ class VoiceToTextApp(QObject):
         keyboard.unhook_all()
 
         try:
-            # Register recording hotkey - use a different approach for press/release
+            # Register recording hotkey using keyboard hook with proper press/release detection
             self.recording_pressed = False
+            
+            def on_keyboard_event(event):
+                # Check if this is our recording hotkey combination
+                if self._is_recording_hotkey(event):
+                    if event.event_type == keyboard.KEY_DOWN:
+                        if not self.recording_pressed:
+                            self.recording_pressed = True
+                            self.start_recording()
+                        return True  # Suppress the key
+                    elif event.event_type == keyboard.KEY_UP:
+                        if self.recording_pressed:
+                            self.recording_pressed = False
+                            self.stop_recording_and_transcribe()
+                        return True  # Suppress the key
+                
+                return False  # Don't suppress other keys
 
-            def on_recording_key_press():
-                if not self.recording_pressed:
-                    self.recording_pressed = True
-                    self.start_recording()
+            # Hook the keyboard events
+            keyboard.hook(on_keyboard_event, suppress=False)
 
-            def on_recording_key_release():
-                if self.recording_pressed:
-                    self.recording_pressed = False
-                    self.stop_recording_and_transcribe()
-
-            # Register the hotkeys
-            keyboard.add_hotkey(
-                START_RECORDING_SHORTCUT, on_recording_key_press, suppress=True
-            )
-            keyboard.add_hotkey(
-                START_RECORDING_SHORTCUT,
-                on_recording_key_release,
-                suppress=False,
-                trigger_on_release=True,
-            )
-
-            # Register exit hotkey
+            # Register exit hotkey (this one doesn't need press/release handling)
             keyboard.add_hotkey(EXIT_SHORTCUT, self._initiate_shutdown, suppress=True)
 
             print(
@@ -317,6 +315,40 @@ class VoiceToTextApp(QObject):
             # Try with simpler F1 key as fallback
             self._register_fallback_hotkeys()
 
+    def _is_recording_hotkey(self, event):
+        """Check if the keyboard event matches our recording hotkey combination."""
+        try:
+            # Parse the hotkey combination
+            hotkey_parts = START_RECORDING_SHORTCUT.lower().split('+')
+            
+            # Check if all required modifiers are pressed
+            required_modifiers = []
+            key_name = None
+            
+            for part in hotkey_parts:
+                part = part.strip()
+                if part in ['ctrl', 'control']:
+                    required_modifiers.append('ctrl')
+                elif part in ['alt']:
+                    required_modifiers.append('alt')
+                elif part in ['shift']:
+                    required_modifiers.append('shift')
+                else:
+                    key_name = part
+            
+            # Check if the event key matches
+            if event.name.lower() != key_name:
+                return False
+            
+            # Check if all required modifiers are currently pressed
+            for modifier in required_modifiers:
+                if not keyboard.is_pressed(modifier):
+                    return False
+            
+            return True
+        except Exception:
+            return False
+
     def _register_fallback_hotkeys(self) -> None:
         """Fallback to simpler hotkeys if combinations don't work."""
         try:
@@ -324,20 +356,24 @@ class VoiceToTextApp(QObject):
 
             self.recording_pressed = False
 
-            def on_f1_press():
-                if not self.recording_pressed:
-                    self.recording_pressed = True
-                    self.start_recording()
+            def on_keyboard_event_fallback(event):
+                # Check if this is F1 key
+                if event.name.lower() == 'f1':
+                    if event.event_type == keyboard.KEY_DOWN:
+                        if not self.recording_pressed:
+                            self.recording_pressed = True
+                            self.start_recording()
+                        return True  # Suppress the key
+                    elif event.event_type == keyboard.KEY_UP:
+                        if self.recording_pressed:
+                            self.recording_pressed = False
+                            self.stop_recording_and_transcribe()
+                        return True  # Suppress the key
+                
+                return False  # Don't suppress other keys
 
-            def on_f1_release():
-                if self.recording_pressed:
-                    self.recording_pressed = False
-                    self.stop_recording_and_transcribe()
-
-            keyboard.add_hotkey("f1", on_f1_press, suppress=True)
-            keyboard.add_hotkey(
-                "f1", on_f1_release, suppress=False, trigger_on_release=True
-            )
+            # Hook the keyboard events for fallback
+            keyboard.hook(on_keyboard_event_fallback, suppress=False)
             keyboard.add_hotkey("ctrl+alt+x", self._initiate_shutdown, suppress=True)
 
         except Exception as e:
