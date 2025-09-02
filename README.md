@@ -1,6 +1,6 @@
 <div align="center">
 
-![Demo](whisprly/assets/demo.gif)
+![Demo](whisprly/assets/icon.png)
 
 # Whisprly
 
@@ -41,7 +41,7 @@ _Transform your voice into text instantly, anywhere on your screen_ ✨
 3. **Run** `Whisprly.exe` and enter your API key in settings
 4. **Start transcribing!** Press `F1` to record
 
-### Option 2: Build from Source
+### Option 2: Run from Source
 
 ```bash
 # Clone the repository
