@@ -1,8 +1,8 @@
 <div align="center">
-
-![Demo](whisprly/assets/icon.png)
-
-# Whisprly
+  <img src="whisprly/assets/icon.png" alt="Demo" width="120"/>
+  
+  # Whisprly
+</div>
 
 **AI-powered speech-to-text that transcribes wherever your cursor is on your computer**
 
