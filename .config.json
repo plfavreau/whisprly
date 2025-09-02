@@ -1,5 +1,6 @@
 {
   "theme": "light",
   "START_RECORDING_SHORTCUT": "ctrl+alt+o",
+  "STOP_RECORDING_SHORTCUT": "ctrl+alt+o",
   "EXIT_SHORTCUT": "ctrl+alt+x"
 }

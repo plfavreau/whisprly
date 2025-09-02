@@ -18,3 +18,10 @@ __pycache__/
 .vscode/
 
 whisprly.egg-info/
+
+# Build artifacts
+build/
+dist/
+*.spec
+icon.ico
+

@@ -1,55 +1,123 @@
+<div align="center">
+
+![Demo](whisprly/assets/demo.gif)
+
 # Whisprly
 
-Whisprly is a lightweight, real-time voice-to-text transcription tool powered by Whisper v3 Turbo through Groq.
+**AI-powered speech-to-text that transcribes wherever your cursor is on your computer**
+
+[![Release](https://img.shields.io/github/v/release/plfavreau/whisprly?style=for-the-badge&logo=github&color=blue)](https://github.com/plfavreau/whisprly/releases)
+[![Downloads](https://img.shields.io/github/downloads/plfavreau/whisprly/total?style=for-the-badge&logo=download&color=green)](https://github.com/plfavreau/whisprly/releases)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python)](https://www.python.org/)
+
+_Transform your voice into text instantly, anywhere on your screen_ ✨
+
+</div>
+
+---
+
+## ✨ Features
+
+- **Real-time transcription** - Press F1, speak, release, done!
+- **Lightning fast** - Powered by Groq's Whisper v3 Turbo
+- **System-wide** - Works in any application
+- **Customizable** - Configure hotkeys and settings
+- **Windows optimized** - Native Windows experience
+- **Lightweight** - Minimal resource usage
+
+## 📥 Quick Download
+
+**Want to try it right now?**
+
+**[Download the latest release](https://github.com/plfavreau/whisprly/releases/latest)** - Just download `Whisprly.exe` and run it!
 
 ## 🚀 Quick Start
 
-### 1. Installation
+### Option 1: Use the Pre-built Executable
 
-Get up and running in seconds.
+1. **Download** the latest `Whisprly.exe` from [releases](https://github.com/plfavreau/whisprly/releases/latest)
+2. **Get your API key** from [https://console.groq.com/keys](https://console.groq.com/keys)
+3. **Run** `Whisprly.exe` and enter your API key in settings
+4. **Start transcribing!** Press `F1` to record
+
+### Option 2: Build from Source
 
 ```bash
-# Create a virtual environment and activate it
+# Clone the repository
+git clone https://github.com/plfavreau/whisprly.git
+cd whisprly
+
+# Set up environment
 uv venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
 
-.venv\Scripts\activate
-
-# Sync dependencies
-```
-
+# Install dependencies
 uv sync
 
-````
+# Configure
+cp .env.example .env
+# Add your GROQ_API_KEY to .env
 
-### 2. Configuration
+# Run
+python main.py
+```
 
-i
+### 🔨 Build Your Own Executable
 
-1.  Copy the `.env.example` file to `.env`.
-2.  Create a Groq API key from [console.groq.com/keys](https://console.groq.com/keys).
-3.  Set your `GROQ_API_KEY` in the `.env` file.
-
-### 3. Usagei
+Want to create your own `Whisprly.exe`? It's super easy!
 
 ```bash
-# Run the application through the virtual environment
-python main.py
-````
+# Build the executable
+uv run python build.py
+```
 
-- **Start Recording**: Press and hold the `F1` key.
-- **Stop Recording**: Release the `F1` key.
-- The transcription will appear at the current position of your text cursor.
-- **Exit**: Press `CTRL` + `ALT` + `X` to exit the application.
+Your new `Whisprly.exe` will be in the `dist/` folder!
 
-> ✨ These shortcuts can be customized in your `.env` file.
+## 🎯 How to Use
 
-### 4. Start on boot (Windows)
+| Action     | Shortcut         | Description                   |
+| ---------- | ---------------- | ----------------------------- |
+| **Record** | Hold `F1`        | Start recording your voice    |
+| **Stop**   | Release `F1`     | Stop recording and transcribe |
+| **Exit**   | `Ctrl + Alt + X` | Close the application         |
 
-To start the application on boot, you can add a shortcut to the `start_whisprly.vbs` script in the startup folder:
+> **Pro tip**: The transcription appears wherever your cursor is - works in any app!
 
-1.  Press `Win + R` to open the Run dialog.
-2.  Type `shell:startup` and press Enter. This will open the startup folder.
-3.  Create a shortcut to the `start_whisprly.vbs` file by right-clicking on it and selecting `Create shortcut`.
-4.  Move the newly created shortcut into the startup folder.
+## Configuration
 
-[!] Note: The exit is not possible in this mode (or you may need to cut the process manually)
+Customize your experience by editing the `.env` file:
+
+```bash
+# API Configuration
+GROQ_API_KEY=your_api_key_here
+
+# Hotkey Settings
+RECORD_KEY=f1
+EXIT_KEY=ctrl+alt+x
+
+# Audio Settings
+SAMPLE_RATE=16000
+CHANNELS=1
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- **Groq** provides the Whisper v3 Turbo API
+- **OpenAI** provides the original Whisper model
+- **PyQt6** provides the python UI framework
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [plfavreau](https://github.com/plfavreau)**
+
+**Star this repo if you find it useful!**
+
+</div>

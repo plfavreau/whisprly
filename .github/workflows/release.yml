@@ -1,0 +1,148 @@
+name: 🚀 Build & Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: 🏗️ Build Application
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: 📦 Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: 🔧 Install dependencies
+      run: |
+        uv venv
+        uv sync
+
+    - name: 🏗️ Build executable
+      run: |
+        uv run python build.py
+
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: whisprly-executable
+        path: dist/Whisprly.exe
+
+  release:
+    name: 🎉 Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🏷️ Get version from pyproject.toml
+      id: get_version
+      run: |
+        VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+    - name: 🔍 Check if tag exists
+      id: check_tag
+      run: |
+        if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: 📈 Bump version
+      if: steps.check_tag.outputs.exists == 'true'
+      id: bump_version
+      run: |
+        CURRENT_VERSION="${{ steps.get_version.outputs.version }}"
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        
+        # Increment patch version
+        NEW_PATCH=$((PATCH + 1))
+        NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+        
+        # Update pyproject.toml
+        sed -i "s/version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" pyproject.toml
+        
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        # Commit the version bump
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add pyproject.toml
+        git commit -m "🔖 Bump version to $NEW_VERSION"
+        git push
+
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: whisprly-executable
+        path: ./dist
+
+    - name: 📦 Create source archive
+      run: |
+        git archive --format=zip --output=whisprly-source.zip HEAD
+
+    - name: 🎉 Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.bump_version.outputs.tag || steps.get_version.outputs.tag }}
+        name: 🎤 Whisprly ${{ steps.bump_version.outputs.version || steps.get_version.outputs.version }}
+        body: |
+          ## 🎉 What's New in Whisprly ${{ steps.bump_version.outputs.version || steps.get_version.outputs.version }}
+          
+          ### 📥 Quick Download
+          - **Windows Executable**: Download `Whisprly.exe` below
+          - **Source Code**: Download `whisprly-source.zip` for building from source
+          
+          ### 🚀 How to Use
+          1. Download `Whisprly.exe`
+          2. Get your API key from [console.groq.com/keys](https://console.groq.com/keys)
+          3. Run the executable and configure your API key
+          4. Press `F1` to start transcribing! 🎤
+          
+          ### 🔧 Build from Source
+          ```bash
+          # Extract the source code
+          unzip whisprly-source.zip
+          cd whisprly
+          
+          # Set up environment
+          uv venv && uv sync
+          
+          # Build your own executable
+          uv run python build.py
+          ```
+          
+          ---
+          
+          **Full Changelog**: https://github.com/plfavreau/whisprly/compare/v${{ steps.get_version.outputs.version }}...v${{ steps.bump_version.outputs.version || steps.get_version.outputs.version }}
+        files: |
+          dist/Whisprly.exe
+          whisprly-source.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
